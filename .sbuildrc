@@ -1,0 +1,39 @@
+# sbuild run commands file
+
+# Name to use as override in .changes files for the Maintainer: field
+# (mandatory, no default!).
+$maintainer_name='林博仁(Buo-ren Lin) <buo.ren.lin@gmail.com>';
+
+# Default distribution to build.
+$distribution = "noble";
+# Build arch-all by default.
+$build_arch_all = 1;
+
+# When to purge the build directory afterwards; possible values are "never",
+# "successful", and "always".  "always" is the default. It can be helpful
+# to preserve failing builds for debugging purposes.  Switch these comments
+# if you want to preserve even successful builds, and then use
+# "schroot -e --all-sessions" to clean them up manually.
+$purge_build_directory = 'successful';
+$purge_session = 'successful';
+$purge_build_deps = 'successful';
+# $purge_build_directory = 'never';
+# $purge_session = 'never';
+# $purge_build_deps = 'never';
+
+# Directory for writing build logs to
+$log_dir=$ENV{HOME}."/ubuntu/logs";
+
+# sbuild - Debian Wiki
+# https://wiki.debian.org/sbuild
+$chroot_mode = 'unshare';
+$external_commands = { "build-failed-commands" => [ [ '%SBUILD_SHELL' ] ] };
+#$run_autopkgtest = 1;
+$autopkgtest_root_args = '';
+$autopkgtest_opts = [ '--apt-upgrade', '--', 'unshare', '--release', '%r', '--arch', '%a' ];
+#$run_piuparts = 1;
+$piuparts_root_args = ['PATH=/usr/sbin:/usr/bin:/sbin:/bin', 'unshare', '--pid', '--fork', '--mount-proc', '--map-root-user', '--map-auto'];
+$piuparts_opts = ["--basetgz=$HOME/.cache/sbuild/%r-%a.tar.zst", '--fake-essential-packages=systemd-sysv', '--distribution=%r'];
+
+# don't remove this, Perl needs it:
+1;
